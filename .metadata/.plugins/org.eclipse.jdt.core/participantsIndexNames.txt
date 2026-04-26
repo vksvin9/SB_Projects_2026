@@ -1,0 +1,3 @@
+INDEX VERSION 1.134
+C:\Users\vin\OneDrive\Documents\Workspace202604\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\862876818.index
+\sb-a01-crud-jpa\src\main\resources

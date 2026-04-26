@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: sb-02-user-service-bom

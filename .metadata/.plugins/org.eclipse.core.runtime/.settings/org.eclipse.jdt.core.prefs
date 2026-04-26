@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+org.eclipse.jdt.core.classpathVariable.JRE_LIB=C\:/Program Files/Java/jdk-21.0.10/lib/jrt-fs.jar
+org.eclipse.jdt.core.classpathVariable.JRE_SRC=C\:/Program Files/Java/jdk-21.0.10/lib/src.zip
+org.eclipse.jdt.core.classpathVariable.JRE_SRCROOT=
+org.eclipse.jdt.core.classpathVariable.M2_REPO=C\:/Users/vin/OneDrive/Documents/repo
+org.eclipse.jdt.core.codeComplete.visibilityCheck=enabled

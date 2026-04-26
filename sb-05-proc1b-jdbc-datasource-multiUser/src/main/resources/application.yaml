@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: sb-05-proc-jdbcTemplate
+
+  datasource:
+    userdb:
+      jdbc-url: jdbc:oracle:thin:@//localhost:1521/freepdb1
+      username: user_db
+      password: password
+      driver-class-name: oracle.jdbc.OracleDriver
+
+    appdb:
+      jdbc-url: jdbc:oracle:thin:@//localhost:1521/freepdb1
+      username: app_user
+      password: app_pass
+      driver-class-name: oracle.jdbc.OracleDriver

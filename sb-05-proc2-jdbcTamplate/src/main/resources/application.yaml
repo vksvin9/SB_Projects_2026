@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: sb-05-proc-jdbcTamplate
+
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1521/freepdb1
+    username: user_db
+    password: password
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jdbc:
+    template:
+      fetch-size: 100
+
+logging:
+  level:
+    root: INFO
+    org.springframework.jdbc.core: DEBUG

@@ -1,0 +1,48 @@
+1. Create BOM Project (Independent Repo)
+Step 1: Create folder
+mkdir sb-02-parent-bom
+cd sb-02-parent-bom
+touch pom.xml
+Step 2: BOM pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sb02.platform</groupId>
+    <artifactId>sb-02-parent-bom</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Import Spring Boot BOM -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>3.2.5</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Custom managed dependency -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>
+Step 3: Install BOM to local repo
+mvn clean install
+
+Now BOM is available for any project.
+
+2. Final BOM Structure
+sb-02-parent-bom
+└── pom.xml
+
+This is your central dependency control system.

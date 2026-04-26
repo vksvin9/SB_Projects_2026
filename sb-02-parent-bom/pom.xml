@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sb02.platform</groupId>
+    <artifactId>sb-02-parent-bom</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Import Spring Boot BOM -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>3.2.5</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Custom managed dependency -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>
