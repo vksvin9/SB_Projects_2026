@@ -23,7 +23,19 @@ public class UserService {
         repo.updateUser(id, name, email);
     }
 
-    public Map<String, Object> getUser(Long id) {
+    public Map<String, String> getUserNoCursor1(Long id) {
+        return repo.getUserNoCursor1(id);
+    }
+
+    public String getUserEmail(Long id) {
+        return repo.getUserNoCursor2(id);
+    }
+
+    public Map<String, Object> getUserCursor1(Long id) {
         return repo.getUserCursor1(id);
+    }
+
+    public Map<String, Object> getUserCursor2(Long id) {
+        return repo.getUserCursor2(id);
     }
 }

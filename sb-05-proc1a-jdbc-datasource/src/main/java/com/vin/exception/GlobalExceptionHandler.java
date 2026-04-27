@@ -1,21 +1,18 @@
 package com.vin.exception;
 
-import java.sql.SQLException;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import com.vin.common.ApiResponse;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.SQLException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponse<?>> handleRuntime(RuntimeException ex) {
+    public ResponseEntity<ApiResponse<?>> handle(RuntimeException ex) {
 
-        SQLException sqlEx = extractSqlException(ex);
+        SQLException sqlEx = extract(ex);
 
         if (sqlEx != null) {
             int code = sqlEx.getErrorCode();
@@ -30,7 +27,7 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), null);
     }
 
-    private SQLException extractSqlException(Throwable ex) {
+    private SQLException extract(Throwable ex) {
         while (ex != null) {
             if (ex instanceof SQLException) return (SQLException) ex;
             ex = ex.getCause();

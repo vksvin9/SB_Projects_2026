@@ -1,0 +1,23 @@
+# Eclipse Workspace (MUST IGNORE)
+.metadata/
+
+# Eclipse project files (optional)
+.project
+.classpath
+.settings/
+
+# Build outputs
+**/target/
+**/build/
+
+# Logs & temp
+*.log
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE cache (important)
+**/.idea/
+**/*.iml
