@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@//oracle-db:1521/FREEPDB1
+    username: user_db
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
