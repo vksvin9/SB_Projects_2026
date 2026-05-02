@@ -1,0 +1,54 @@
+# =========================
+# SERVICES
+# =========================
+services:
+
+  # =========================
+  # ORACLE DB (LOW MEMORY)
+  # =========================
+  oracle-db:
+    image: gvenzl/oracle-free:23-slim
+    container_name: oracle-db
+
+    environment:
+      ORACLE_PASSWORD: Oracle123
+      APP_USER: app_user
+      APP_USER_PASSWORD: app_pass
+      ORACLE_MEMORY: 1024   # 🔥 critical for 8GB system
+
+    ports:
+      - "1521:1521"
+
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+
+
+  # =========================
+  # SPRING BOOT APP
+  # =========================
+  app:
+    build: .
+    container_name: sb-app
+
+    # -------------------------
+    # SIMPLE DEPENDENCY (NO HEALTHCHECK)
+    # -------------------------
+    depends_on:
+      - oracle-db
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      DB_HOST: oracle-db
+      DB_PORT: 1521
+      DB_SERVICE: FREEPDB1
+      DB_USER: app_user
+      DB_PASSWORD: app_pass
+
+
+# =========================
+# VOLUME
+# =========================
+volumes:
+  oracle_data:

@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+api:
+  base-url: ${API_BASE_URL:https://jsonplaceholder.typicode.com}
+
+logging:
+  file:
+    name: /logs/app.log   # log inside container
+
+  level:
+    root: INFO
+    com.vin: DEBUG
+
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB     # rotate after 10MB
+      max-history: 10         # keep 10 files
