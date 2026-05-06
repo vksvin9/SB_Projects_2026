@@ -21,3 +21,6 @@ Thumbs.db
 # IDE cache (important)
 **/.idea/
 **/*.iml
+
+#Documnets
+sb/
