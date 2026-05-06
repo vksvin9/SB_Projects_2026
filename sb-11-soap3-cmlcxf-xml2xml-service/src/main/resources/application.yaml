@@ -1,0 +1,10 @@
+server:
+  port: 8081
+
+camel:
+  springboot:
+    name: soap-cxf-service
+
+soap:
+  backend:
+    url: http://localhost:8082/services/v1/user-service

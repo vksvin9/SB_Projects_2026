@@ -1,0 +1,265 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://soap.vin.com/user" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="UserSoapServiceImplService" targetNamespace="http://soap.vin.com/user">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://soap.vin.com/user" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://soap.vin.com/user" version="1.0">
+  <xs:element name="CreateUserRequest" type="tns:createUserRequest"/>
+  <xs:element name="CreateUserResponse" type="tns:CreateUserResponseType"/>
+  <xs:element name="DeleteUserRequest" type="tns:deleteUserRequest"/>
+  <xs:element name="DeleteUserResponse" type="tns:DeleteUserResponseType"/>
+  <xs:element name="GetUserRequest" type="tns:getUserRequest"/>
+  <xs:element name="GetUserResponse" type="tns:GetUserResponseType"/>
+  <xs:element name="UpdateUserRequest" type="tns:updateUserRequest"/>
+  <xs:element name="UpdateUserResponse" type="tns:UpdateUserResponseType"/>
+  <xs:complexType name="getUserRequest">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GetUserResponseType">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" name="email" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="deleteUserRequest">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DeleteUserResponseType">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="status" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="createUserRequest">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" name="email" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CreateUserResponseType">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" name="email" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="updateUserRequest">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" name="email" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UpdateUserResponseType">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" name="email" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DeleteUserFromApiRequest" nillable="true" type="tns:deleteUserRequest"/>
+  <xs:element name="DeleteUserFromApiResponse" nillable="true" type="tns:DeleteUserResponseType"/>
+  <xs:element name="GetUserFromApiRequest" nillable="true" type="tns:getUserRequest"/>
+  <xs:element name="GetUserFromApiResponse" nillable="true" type="tns:GetUserResponseType"/>
+  <xs:element name="CreateUserFromApiRequest" nillable="true" type="tns:createUserRequest"/>
+  <xs:element name="CreateUserFromApiResponse" nillable="true" type="tns:CreateUserResponseType"/>
+  <xs:element name="UpdateUserFromApiRequest" nillable="true" type="tns:updateUserRequest"/>
+  <xs:element name="UpdateUserFromApiResponse" nillable="true" type="tns:UpdateUserResponseType"/>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getUserResponse">
+    <wsdl:part element="tns:GetUserResponse" name="GetUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUser">
+    <wsdl:part element="tns:GetUserRequest" name="GetUserRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserFromApi">
+    <wsdl:part element="tns:GetUserFromApiRequest" name="GetUserFromApiRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createUserResponse">
+    <wsdl:part element="tns:CreateUserResponse" name="CreateUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateUserFromApiResponse">
+    <wsdl:part element="tns:UpdateUserFromApiResponse" name="UpdateUserFromApiResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateUser">
+    <wsdl:part element="tns:UpdateUserRequest" name="UpdateUserRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserFromApiResponse">
+    <wsdl:part element="tns:DeleteUserFromApiResponse" name="DeleteUserFromApiResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createUserFromApiResponse">
+    <wsdl:part element="tns:CreateUserFromApiResponse" name="CreateUserFromApiResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserFromApiResponse">
+    <wsdl:part element="tns:GetUserFromApiResponse" name="GetUserFromApiResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserFromApi">
+    <wsdl:part element="tns:DeleteUserFromApiRequest" name="DeleteUserFromApiRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createUser">
+    <wsdl:part element="tns:CreateUserRequest" name="CreateUserRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createUserFromApi">
+    <wsdl:part element="tns:CreateUserFromApiRequest" name="CreateUserFromApiRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateUserFromApi">
+    <wsdl:part element="tns:UpdateUserFromApiRequest" name="UpdateUserFromApiRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUser">
+    <wsdl:part element="tns:DeleteUserRequest" name="DeleteUserRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserResponse">
+    <wsdl:part element="tns:DeleteUserResponse" name="DeleteUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateUserResponse">
+    <wsdl:part element="tns:UpdateUserResponse" name="UpdateUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="UserService">
+    <wsdl:operation name="getUser">
+      <wsdl:input message="tns:getUser" name="getUser">
+    </wsdl:input>
+      <wsdl:output message="tns:getUserResponse" name="getUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserFromApi">
+      <wsdl:input message="tns:deleteUserFromApi" name="deleteUserFromApi">
+    </wsdl:input>
+      <wsdl:output message="tns:deleteUserFromApiResponse" name="deleteUserFromApiResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserFromApi">
+      <wsdl:input message="tns:getUserFromApi" name="getUserFromApi">
+    </wsdl:input>
+      <wsdl:output message="tns:getUserFromApiResponse" name="getUserFromApiResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createUser">
+      <wsdl:input message="tns:createUser" name="createUser">
+    </wsdl:input>
+      <wsdl:output message="tns:createUserResponse" name="createUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createUserFromApi">
+      <wsdl:input message="tns:createUserFromApi" name="createUserFromApi">
+    </wsdl:input>
+      <wsdl:output message="tns:createUserFromApiResponse" name="createUserFromApiResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateUser">
+      <wsdl:input message="tns:updateUser" name="updateUser">
+    </wsdl:input>
+      <wsdl:output message="tns:updateUserResponse" name="updateUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateUserFromApi">
+      <wsdl:input message="tns:updateUserFromApi" name="updateUserFromApi">
+    </wsdl:input>
+      <wsdl:output message="tns:updateUserFromApiResponse" name="updateUserFromApiResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUser">
+      <wsdl:input message="tns:deleteUser" name="deleteUser">
+    </wsdl:input>
+      <wsdl:output message="tns:deleteUserResponse" name="deleteUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="UserSoapServiceImplServiceSoapBinding" type="tns:UserService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserFromApi">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="deleteUserFromApi">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteUserFromApiResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserFromApi">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getUserFromApi">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getUserFromApiResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="createUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createUserFromApi">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="createUserFromApi">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createUserFromApiResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="updateUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="updateUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateUserFromApi">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="updateUserFromApi">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="updateUserFromApiResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="deleteUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="UserSoapServiceImplService">
+    <wsdl:port binding="tns:UserSoapServiceImplServiceSoapBinding" name="UserSoapServiceImplPort">
+      <soap:address location="http://localhost:8080/services/v1/user-service"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+    username: app_user
+    password: app_pass
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+server:
+  port: 8080

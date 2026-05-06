@@ -1,0 +1,23 @@
+server:
+  port: 8082
+cxf:
+  path: /services
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:vin-db
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+external:
+   user-api:
+     base-url: https://jsonplaceholder.typicode.com

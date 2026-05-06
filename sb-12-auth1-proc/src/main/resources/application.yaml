@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+    username: app_user
+    password: app_pass
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+server:
+  port: 8080
