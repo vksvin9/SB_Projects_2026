@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/header :: header"></head>
+
+<body class="bg-light">
+
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header
+                    bg-dark
+                    text-white
+                    d-flex
+                    justify-content-between">
+
+            <h3>
+                Question Management
+            </h3>
+
+            <a th:href=
+               "@{/admin/questions/create/{id}
+               (id=${examId})}"
+
+               class="btn btn-light">
+
+                Add Question
+
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table
+                          table-bordered">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Question</th>
+                    <th>Correct</th>
+                    <th>Marks</th>
+                    <th>Actions</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each=
+                    "question : ${questions}">
+
+                    <td th:text=
+                        "${question.id}">
+                    </td>
+
+                    <td th:text=
+                        "${question.questionText}">
+                    </td>
+
+                    <td th:text=
+                        "${question.correctAnswer}">
+                    </td>
+
+                    <td th:text=
+                        "${question.marks}">
+                    </td>
+
+                    <td>
+
+                        <a th:href=
+                           "@{/admin/questions/edit/{id}
+                           (id=${question.id})}"
+
+                           class=
+                           "btn btn-warning btn-sm">
+
+                            Edit
+
+                        </a>
+
+                        <a th:href=
+                           "@{/admin/questions/delete/{id}/{examId}
+                           (
+                           id=${question.id},
+                           examId=${examId}
+                           )}"
+
+                           class=
+                           "btn btn-danger btn-sm">
+
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

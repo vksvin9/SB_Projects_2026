@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/header :: header"></head>
+
+<body>
+
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header
+                    bg-success
+                    text-white">
+
+            <h3>
+                Available Exams
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Duration</th>
+                    <th>Total Marks</th>
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="exam : ${exams}">
+
+                    <td th:text="${exam.title}">
+                    </td>
+
+                    <td th:text=
+                        "${exam.description}">
+                    </td>
+
+                    <td>
+
+                        <span th:text=
+                              "${exam.durationMinutes}">
+                        </span>
+
+                        mins
+
+                    </td>
+
+                    <td th:text=
+                        "${exam.totalMarks}">
+                    </td>
+
+                    <td>
+
+                        <a th:href=
+                           "@{/student/exams/start/{id}
+                           (id=${exam.id})}"
+
+                           class=
+                           "btn btn-primary">
+
+                            Start Exam
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

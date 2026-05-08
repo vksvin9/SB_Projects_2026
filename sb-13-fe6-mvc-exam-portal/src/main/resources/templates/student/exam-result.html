@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/header :: header"></head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header
+                    bg-success
+                    text-white">
+
+            <h2>
+                Exam Result
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <tr>
+
+                    <th>
+                        Exam
+                    </th>
+
+                    <td th:text=
+                        "${result.examTitle}">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        Total Questions
+                    </th>
+
+                    <td th:text=
+                        "${result.totalQuestions}">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        Correct Answers
+                    </th>
+
+                    <td th:text=
+                        "${result.correctAnswers}">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        Wrong Answers
+                    </th>
+
+                    <td th:text=
+                        "${result.wrongAnswers}">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        Score
+                    </th>
+
+                    <td th:text=
+                        "${result.score}">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        Percentage
+                    </th>
+
+                    <td>
+
+                        <span th:text=
+                              "${#numbers.formatDecimal(
+                              result.percentage,
+                              1,
+                              2)}">
+                        </span>
+
+                        %
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <td>
+
+                        <span th:text=
+                              "${result.status}"
+
+                              th:classappend=
+                              "${result.status == 'PASS'}
+                              ?
+                              'text-success fw-bold'
+                              :
+                              'text-danger fw-bold'">
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+            <a th:href=
+               "@{/student/exams}"
+
+               class=
+               "btn btn-primary">
+
+                Back To Exams
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

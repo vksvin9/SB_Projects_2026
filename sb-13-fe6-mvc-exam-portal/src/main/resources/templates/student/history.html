@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace=
+      "fragments/header :: header">
+</head>
+
+<body class="bg-light">
+
+<div th:replace=
+     "fragments/navbar :: navbar">
+</div>
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header
+                    bg-dark
+                    text-white">
+
+            <h3>
+                Exam History
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>Exam</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Status</th>
+                    <th>Date</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="result : ${results}">
+
+                    <td th:text=
+                        "${result.exam.title}">
+                    </td>
+
+                    <td th:text=
+                        "${result.score}">
+                    </td>
+
+                    <td>
+
+                        <span th:text=
+                        "${#numbers.formatDecimal(
+                        result.percentage,
+                        1,
+                        2)}">
+                        </span>
+
+                        %
+
+                    </td>
+
+                    <td>
+
+                        <span th:text=
+                              "${result.status}"
+
+                              th:classappend=
+                              "${result.status == 'PASS'}
+                              ?
+                              'text-success fw-bold'
+                              :
+                              'text-danger fw-bold'">
+                        </span>
+
+                    </td>
+
+                    <td th:text=
+                        "${result.submittedAt}">
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/header :: header"></head>
+
+<body class="bg-light">
+
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header
+                    bg-primary
+                    text-white
+                    d-flex
+                    justify-content-between
+                    align-items-center">
+
+            <h3>
+                Exam Management
+            </h3>
+
+            <a th:href="@{/admin/exams/create}"
+               class="btn btn-light">
+
+                Add Exam
+
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table
+                          table-bordered
+                          table-hover
+                          align-middle">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Title</th>
+
+                    <th>Description</th>
+
+                    <th>Duration</th>
+
+                    <th>Total Marks</th>
+
+                    <th width="320">
+                        Actions
+                    </th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:if="${#lists.isEmpty(exams)}">
+
+                    <td colspan="6"
+                        class="text-center text-danger">
+
+                        No Exams Available
+
+                    </td>
+
+                </tr>
+
+                <tr th:each="exam : ${exams}">
+
+                    <td th:text="${exam.id}">
+                    </td>
+
+                    <td th:text="${exam.title}">
+                    </td>
+
+                    <td th:text="${exam.description}">
+                    </td>
+
+                    <td>
+
+                        <span th:text=
+                              "${exam.durationMinutes}">
+                        </span>
+
+                        mins
+
+                    </td>
+
+                    <td th:text=
+                        "${exam.totalMarks}">
+                    </td>
+
+                    <td>
+
+                        <a th:href=
+                           "@{/admin/questions/{id}
+                           (id=${exam.id})}"
+
+                           class=
+                           "btn btn-info btn-sm">
+
+                            Questions
+
+                        </a>
+
+                        <a th:href=
+                           "@{/admin/exams/edit/{id}
+                           (id=${exam.id})}"
+
+                           class=
+                           "btn btn-warning btn-sm">
+
+                            Edit
+
+                        </a>
+
+                        <a th:href=
+                           "@{/admin/exams/delete/{id}
+                           (id=${exam.id})}"
+
+                           class=
+                           "btn btn-danger btn-sm"
+
+                           onclick=
+                           "return confirm(
+                           'Delete this exam?')">
+
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

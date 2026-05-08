@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace=
+      "fragments/header :: header">
+</head>
+
+<body>
+
+<div th:replace=
+     "fragments/navbar :: navbar">
+</div>
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header
+                    bg-warning">
+
+            <h3>
+                Leaderboard
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>Rank</th>
+                    <th>Student</th>
+                    <th>Exam</th>
+                    <th>Score</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each=
+                    "leader, stat : ${leaders}">
+
+                    <td th:text=
+                        "${stat.count}">
+                    </td>
+
+                    <td th:text=
+                        "${leader.student.fullName}">
+                    </td>
+
+                    <td th:text=
+                        "${leader.exam.title}">
+                    </td>
+
+                    <td th:text=
+                        "${leader.score}">
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
