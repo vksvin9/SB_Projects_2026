@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: sb-13-fe7-mvc-ai-chat-bot
+
+  thymeleaf:
+    cache: false
+
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: llama3.2
+      connection-timeout: 10s
+      read-timeout: 120s
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.vin: DEBUG
+    org.springframework.ai: DEBUG
