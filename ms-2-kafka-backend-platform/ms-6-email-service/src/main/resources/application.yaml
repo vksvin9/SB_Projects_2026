@@ -1,0 +1,104 @@
+spring:
+
+  application:
+    name: ${APP_NAME:ms-6-email-service}
+
+  kafka:
+
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    consumer:
+
+      group-id: ${KAFKA_CONSUMER_GROUP:email-group}
+
+      auto-offset-reset: earliest
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+
+        spring:
+          json:
+            trusted:
+              packages: "*"
+
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+server:
+  port: ${APP_PORT:8083}
+
+# EUREKA CONFIGURATION
+
+eureka:
+
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    instance-id: ${spring.application.name}:${server.port}
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+
+    service-url:
+      defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka}
+
+# ACTUATOR CONFIGURATION
+
+management:
+
+  endpoints:
+
+    web:
+      exposure:
+        include:
+          - health
+          - info
+
+  endpoint:
+
+    health:
+      show-details: always
+
+  info:
+    env:
+      enabled: true
+
+  tracing:
+
+    sampling:
+      probability: 1.0
+
+# APPLICATION INFO
+
+info:
+
+  app:
+    name: ${APP_NAME:ms-6-email-service}
+    version: ${APP_VERSION:1.0.0}
+    description: ${APP_DESCRIPTION:Kafka Email Consumer Service}
+
+# LOGGING CONFIGURATION
+
+logging:
+
+  level:
+    root: INFO
+    com.vin: DEBUG
+    org.springframework.kafka: INFO
+    org.apache.kafka: INFO
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# CUSTOM TOPICS
+
+kafka:
+
+  topic:
+    user-created: ${KAFKA_TOPIC_USER_CREATED:user-created}

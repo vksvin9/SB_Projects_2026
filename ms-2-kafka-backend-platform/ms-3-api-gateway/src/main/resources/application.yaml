@@ -1,0 +1,144 @@
+spring:
+  application:
+    name: ${APP_NAME:ms-3-api-gateway}
+
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+    gateway:
+
+      # =========================================================
+      # AUTO DISCOVERY ROUTING
+      # =========================================================
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      # =========================================================
+      # GATEWAY ROUTES
+      # =========================================================
+      routes:
+
+        # =========================================================
+        # EUREKA DASHBOARD ROUTE
+        # =========================================================
+        - id: discovery-server
+          uri: lb://ms-2-discovery-server
+
+          predicates:
+            - Path=/eureka/web
+
+          filters:
+            - SetPath=/
+
+        # =========================================================
+        # EUREKA STATIC CONTENT
+        # =========================================================
+        - id: discovery-server-static
+          uri: lb://ms-2-discovery-server
+
+          predicates:
+            - Path=/eureka/**
+
+        # =========================================================
+        # JWT AUTH SERVICE
+        # =========================================================
+        - id: jwt-auth-service
+          uri: lb://ms-4-jwt-auth-service
+
+          predicates:
+            - Path=/auth/**
+
+        # =========================================================
+        # CREATE USER SERVICE
+        # =========================================================
+        - id: create-user-service
+          uri: lb://ms-5-create-user-service
+
+          predicates:
+            - Path=/users/**
+
+server:
+  port: ${APP_PORT:8080}
+
+# =========================================================
+# EUREKA CONFIGURATION
+# =========================================================
+eureka:
+
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    instance-id: ${spring.application.name}:${server.port}
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+
+    service-url:
+      defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka}
+
+# =========================================================
+# JWT CONFIGURATION
+# =========================================================
+jwt:
+  secret-key: ${JWT_SECRET_KEY:MySuperSecureJwtSecretKeyMySuperSecureJwtSecretKey}
+
+# =========================================================
+# ACTUATOR CONFIGURATION
+# =========================================================
+management:
+
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - gateway
+
+  endpoint:
+
+    health:
+      show-details: always
+
+    gateway:
+      access: unrestricted
+
+  info:
+    env:
+      enabled: true
+
+  tracing:
+    sampling:
+      probability: 1.0
+
+# =========================================================
+# APPLICATION INFO
+# =========================================================
+info:
+  app:
+    name: ${APP_NAME:ms-3-api-gateway}
+    version: ${APP_VERSION:1.0.0}
+    description: ${APP_DESCRIPTION:Spring Cloud API Gateway}
+
+# =========================================================
+# LOGGING CONFIGURATION
+# =========================================================
+logging:
+
+  level:
+    root: INFO
+
+    com.vin: DEBUG
+
+    org.springframework.cloud.gateway: INFO
+    reactor.netty: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

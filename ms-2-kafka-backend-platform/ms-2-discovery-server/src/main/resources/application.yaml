@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: ${APP_NAME:ms-2-discovery-server}
+
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+server:
+  port: ${APP_PORT:8761}
+
+# =========================================================
+# EUREKA CONFIGURATION
+# =========================================================
+eureka:
+
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+# =========================================================
+# ACTUATOR CONFIGURATION
+# =========================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+
+  endpoint:
+    health:
+      show-details: always
+
+  info:
+    env:
+      enabled: true
+
+  tracing:
+    sampling:
+      probability: 1.0
+
+# =========================================================
+# APPLICATION INFO
+# =========================================================
+info:
+  app:
+    name: ${APP_NAME:ms-2-discovery-server}
+    version: ${APP_VERSION:1.0.0}
+    description: ${APP_DESCRIPTION:Eureka Discovery Server}
+
+# =========================================================
+# LOGGING
+# =========================================================
+logging:
+  level:
+    root: INFO
+    com.vin: DEBUG

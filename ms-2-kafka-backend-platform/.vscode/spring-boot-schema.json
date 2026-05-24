@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Local permissive Spring Boot schema",
+  "description": "A minimal schema to avoid remote fetch errors; allows any object.",
+  "type": "object",
+  "additionalProperties": true
+}
