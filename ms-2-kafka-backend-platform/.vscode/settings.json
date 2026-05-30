@@ -3,7 +3,16 @@
     "yaml.schemaStore.enable": false,
     "yaml.schemas": {
         "file:///c:/Users/vin/OneDrive/Documents/Workspace/ms-2-kafka-backend-platform/.vscode/spring-boot-schema.json": [
-            "ms-2-discovery-server/src/main/resources/application.yaml"
+            "**/application.yaml"
+        ],
+        "file:///c:/Users/vin/OneDrive/Documents/Workspace/ms-2-kafka-backend-platform/.vscode/spring-boot.schema.json": [
+            "**/application.yaml"
+        ],
+        "./.vscode/spring-boot-schema.json": [
+            "**/application.yaml"
+        ],
+        "./.vscode/spring-boot.schema.json": [
+            "**/application.yaml"
         ]
     },
     "yaml.validate": true,

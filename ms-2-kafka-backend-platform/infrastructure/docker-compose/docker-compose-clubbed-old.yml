@@ -1,0 +1,617 @@
+version: '3.9'
+
+services:
+
+  # =========================================================
+  # ORACLE DATABASE
+  # =========================================================
+  oracle-db:
+    image: gvenzl/oracle-free:23-slim
+
+    container_name: oracle-db
+
+    ports:
+      - "1521:1521"
+
+    environment:
+      ORACLE_PASSWORD: Oracle123
+
+      APP_USER: app_user
+      APP_USER_PASSWORD: app_pass
+
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+    restart: unless-stopped
+
+    mem_limit: 2g
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bash",
+          "-c",
+          "echo 'SELECT 1 FROM dual;' | sqlplus -s system/Oracle123@FREEPDB1"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # ZOOKEEPER
+  # =========================================================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+
+    container_name: zookeeper
+
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+    ports:
+      - "2181:2181"
+
+    restart: unless-stopped
+
+    mem_limit: 300m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bash",
+          "-c",
+          "echo ruok | nc localhost 2181"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # REDIS
+  # =========================================================
+  redis:
+    image: redis:7.2
+
+    container_name: redis
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis-data:/data
+
+    restart: unless-stopped
+
+    mem_limit: 150m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # ZIPKIN
+  # =========================================================
+  zipkin:
+    image: openzipkin/zipkin
+
+    container_name: zipkin
+
+    ports:
+      - "9411:9411"
+
+    restart: unless-stopped
+
+    mem_limit: 256m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # KAFKA
+  # =========================================================
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+
+    container_name: kafka
+
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+    ports:
+      - "9092:9092"
+
+    environment:
+      KAFKA_BROKER_ID: 1
+
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+    restart: unless-stopped
+
+    mem_limit: 1g
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "kafka-topics",
+          "--bootstrap-server",
+          "kafka:9092",
+          "--list"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # DISCOVERY SERVER
+  # =========================================================
+  discovery-server:
+    build:
+      context: ../../ms-2-discovery-server
+
+    container_name: discovery-server
+
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+      oracle-db:
+        condition: service_healthy
+
+      zipkin:
+        condition: service_started
+
+    ports:
+      - "8761:8761"
+
+    environment:
+      APP_NAME: ms-2-discovery-server
+
+      APP_PORT: 8761
+
+    volumes:
+      - ../logs/discovery-server:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 400m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8761/actuator/health"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # API GATEWAY
+  # =========================================================
+  api-gateway:
+    build:
+      context: ../../ms-3-api-gateway
+
+    container_name: api-gateway
+
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      APP_NAME: ms-3-api-gateway
+
+      APP_PORT: 8080
+
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+
+      JWT_SECRET_KEY: MySuperSecureJwtSecretKeyMySuperSecureJwtSecretKey
+
+    volumes:
+      - ../logs/api-gateway:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8080/actuator/health"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # JWT AUTH SERVICE
+  # =========================================================
+  jwt-auth-service:
+    build:
+      context: ../../ms-4-jwt-auth-service
+
+    container_name: jwt-auth-service
+
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+
+      oracle-db:
+        condition: service_healthy
+
+    ports:
+      - "8081:8081"
+
+    environment:
+      APP_NAME: ms-4-jwt-auth-service
+
+      APP_PORT: 8081
+
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+
+      DB_URL: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
+
+      DB_USERNAME: app_user
+
+      DB_PASSWORD: app_pass
+
+      JWT_SECRET_KEY: MySuperSecureJwtSecretKeyMySuperSecureJwtSecretKey
+
+    volumes:
+      - ../logs/jwt-auth-service:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8081/actuator/health"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # CREATE USER SERVICE
+  # =========================================================
+  create-user-service:
+    build:
+      context: ../../ms-5-create-user-service
+
+    container_name: create-user-service
+
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+      discovery-server:
+        condition: service_healthy
+
+      oracle-db:
+        condition: service_healthy
+
+    ports:
+      - "8082:8082"
+
+    environment:
+      APP_NAME: ms-5-create-user-service
+
+      APP_PORT: 8082
+
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+      KAFKA_TOPIC_USER_CREATED: user-created
+
+      DB_URL: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
+
+      DB_USERNAME: app_user
+
+      DB_PASSWORD: app_pass
+
+    volumes:
+      - ../logs/create-user-service:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8082/actuator/health"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # EMAIL SERVICE
+  # =========================================================
+  email-service:
+    build:
+      context: ../../ms-6-email-service
+
+    container_name: email-service
+
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+      discovery-server:
+        condition: service_healthy
+
+    ports:
+      - "8083:8083"
+
+    environment:
+      APP_NAME: ms-6-email-service
+
+      APP_PORT: 8083
+
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+      KAFKA_TOPIC_USER_CREATED: user-created
+
+    volumes:
+      - ../logs/email-service:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 300m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8083/actuator/health"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  # =========================================================
+  # AUDIT SERVICE
+  # =========================================================
+  audit-service:
+    build:
+      context: ../../ms-7-audit-service
+
+    container_name: audit-service
+
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+      discovery-server:
+        condition: service_healthy
+
+      oracle-db:
+        condition: service_healthy
+
+    ports:
+      - "8084:8084"
+
+    environment:
+      APP_NAME: ms-7-audit-service
+
+      APP_PORT: 8084
+
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+      KAFKA_TOPIC_USER_CREATED: user-created
+
+      DB_URL: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
+
+      DB_USERNAME: app_user
+
+      DB_PASSWORD: app_pass
+
+    volumes:
+      - ../logs/audit-service:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 300m
+
+    logging:
+      driver: "json-file"
+
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8084/actuator/health"
+        ]
+
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+# =========================================================
+# VOLUMES
+# =========================================================
+volumes:
+  oracle-data:
+  kafka-data:
+  redis-data:
+
+# =========================================================
+# NETWORKS
+# =========================================================
+networks:
+  backend-network:
+    driver: bridge

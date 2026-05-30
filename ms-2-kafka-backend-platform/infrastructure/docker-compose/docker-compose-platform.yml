@@ -1,0 +1,290 @@
+version: '3.9'
+
+services:
+
+  platform-precheck:
+    image: alpine:3.20
+    container_name: platform-precheck
+
+    command: >
+      sh -c "
+      apk add --no-cache curl netcat-openbsd &&
+      echo 'Checking Oracle...' &&
+      nc -z oracle-db 1521 &&
+      echo 'Checking Kafka...' &&
+      nc -z kafka 29092 &&
+      echo 'Checking Zipkin...' &&
+      curl -f http://zipkin:9411/health &&
+      echo 'All platform dependencies are healthy'
+      "
+
+    restart: "no"
+
+    networks:
+      - backend-network
+
+  discovery-server:
+    build:
+      context: ../../ms-2-discovery-server
+
+    container_name: discovery-server
+
+    depends_on:
+      platform-precheck:
+        condition: service_completed_successfully
+
+    ports:
+      - "8761:8761"
+
+    environment:
+      APP_NAME: ms-2-discovery-server
+      APP_PORT: 8761
+
+    volumes:
+      - ../logs/discovery-server:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 400m
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  api-gateway:
+    build:
+      context: ../../ms-3-api-gateway
+
+    container_name: api-gateway
+
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      APP_NAME: ms-3-api-gateway
+      APP_PORT: 8080
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+      JWT_SECRET_KEY: MySuperSecureJwtSecretKeyMySuperSecureJwtSecretKey
+
+    volumes:
+      - ../logs/api-gateway:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  jwt-auth-service:
+    build:
+      context: ../../ms-4-jwt-auth-service
+
+    container_name: jwt-auth-service
+
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+
+    ports:
+      - "8081:8081"
+
+    environment:
+      APP_NAME: ms-4-jwt-auth-service
+      APP_PORT: 8081
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+      DB_URL: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
+      DB_USERNAME: app_user
+      DB_PASSWORD: app_pass
+      JWT_SECRET_KEY: MySuperSecureJwtSecretKeyMySuperSecureJwtSecretKey
+
+    volumes:
+      - ../logs/jwt-auth-service:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  create-user-service:
+    build:
+      context: ../../ms-5-create-user-service
+
+    container_name: create-user-service
+
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+
+    ports:
+      - "8082:8082"
+
+    environment:
+      APP_NAME: ms-5-create-user-service
+      APP_PORT: 8082
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_USER_CREATED: user-created
+      DB_URL: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
+      DB_USERNAME: app_user
+      DB_PASSWORD: app_pass
+
+    volumes:
+      - ../logs/create-user-service:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  email-service:
+    build:
+      context: ../../ms-6-email-service
+
+    container_name: email-service
+
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+
+    ports:
+      - "8083:8083"
+
+    environment:
+      APP_NAME: ms-6-email-service
+      APP_PORT: 8083
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_USER_CREATED: user-created
+
+    volumes:
+      - ../logs/email-service:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 300m
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+  audit-service:
+    build:
+      context: ../../ms-7-audit-service
+
+    container_name: audit-service
+
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+
+    ports:
+      - "8084:8084"
+
+    environment:
+      APP_NAME: ms-7-audit-service
+      APP_PORT: 8084
+      DISCOVERY_SERVER_URL: http://discovery-server:8761/eureka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_USER_CREATED: user-created
+      DB_URL: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
+      DB_USERNAME: app_user
+      DB_PASSWORD: app_pass
+
+    volumes:
+      - ../logs/audit-service:/logs
+
+    restart: unless-stopped
+
+    mem_limit: 300m
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    external: true

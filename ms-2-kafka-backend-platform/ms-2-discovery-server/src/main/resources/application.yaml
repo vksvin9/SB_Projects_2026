@@ -15,9 +15,9 @@ server:
 eureka:
 
   instance:
-    hostname: localhost
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
     prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
+    instance-id: "${spring.application.name}:${server.port}"
 
   client:
     register-with-eureka: false
@@ -27,6 +27,7 @@ eureka:
 # ACTUATOR CONFIGURATION
 # =========================================================
 management:
+
   endpoints:
     web:
       exposure:
@@ -46,6 +47,10 @@ management:
     sampling:
       probability: 1.0
 
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}
+
 # =========================================================
 # APPLICATION INFO
 # =========================================================
@@ -61,4 +66,6 @@ info:
 logging:
   level:
     root: INFO
-    com.vin: DEBUG
+
+    com:
+      vin: DEBUG

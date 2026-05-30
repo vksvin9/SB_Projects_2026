@@ -1,5 +1,6 @@
 package com.vin.filter;
 
+import com.vin.service.RedisService;
 import com.vin.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private final JwtUtil jwtUtil;
 
+    private final RedisService redisService;
+
     @Override
     public Mono<Void> filter(
             ServerWebExchange exchange,
@@ -26,21 +29,30 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getPath();
 
         /*
-         * Public Routes
+         * =========================================================
+         * PUBLIC ROUTES
+         * =========================================================
          */
         if (path.contains("/auth/")
                 || path.contains("/actuator")
-                || path.contains("/eureka")) {
+                || path.contains("/eureka")
+                || path.contains("/redis")) {
 
             return chain.filter(exchange);
         }
 
+        /*
+         * =========================================================
+         * AUTHORIZATION HEADER VALIDATION
+         * =========================================================
+         */
         String authHeader =
                 exchange.getRequest()
                         .getHeaders()
                         .getFirst(HttpHeaders.AUTHORIZATION);
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null
+                || !authHeader.startsWith("Bearer ")) {
 
             log.error("Missing Authorization Header");
 
@@ -50,21 +62,56 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             return exchange.getResponse().setComplete();
         }
 
+        /*
+         * =========================================================
+         * EXTRACT JWT TOKEN
+         * =========================================================
+         */
         String token = authHeader.substring(7);
 
-        if (!jwtUtil.isTokenValid(token)) {
+        /*
+         * =========================================================
+         * CHECK REDIS TOKEN BLACKLIST
+         * =========================================================
+         */
+        return redisService
+                .get("blacklist:" + token)
 
-            log.error("Invalid JWT Token");
+                .flatMap(blacklistedToken -> {
 
-            exchange.getResponse()
-                    .setStatusCode(HttpStatus.UNAUTHORIZED);
+                    log.error("JWT Token Blacklisted");
 
-            return exchange.getResponse().setComplete();
-        }
+                    exchange.getResponse()
+                            .setStatusCode(HttpStatus.UNAUTHORIZED);
 
-        log.info("JWT Token Valid");
+                    return exchange.getResponse().setComplete();
+                })
 
-        return chain.filter(exchange);
+                /*
+                 * =========================================================
+                 * VALIDATE JWT TOKEN
+                 * =========================================================
+                 */
+                .switchIfEmpty(
+                        Mono.defer(() -> {
+
+                            if (!jwtUtil.isTokenValid(token)) {
+
+                                log.error("Invalid JWT Token");
+
+                                exchange.getResponse()
+                                        .setStatusCode(HttpStatus.UNAUTHORIZED);
+
+                                return exchange
+                                        .getResponse()
+                                        .setComplete();
+                            }
+
+                            log.info("JWT Token Valid");
+
+                            return chain.filter(exchange);
+                        })
+                );
     }
 
     @Override

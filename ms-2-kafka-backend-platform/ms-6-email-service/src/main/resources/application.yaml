@@ -31,14 +31,14 @@ spring:
 server:
   port: ${APP_PORT:8083}
 
+# =========================================================
 # EUREKA CONFIGURATION
-
+# =========================================================
 eureka:
 
   instance:
-    hostname: localhost
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
     prefer-ip-address: true
-    ip-address: 127.0.0.1
     instance-id: ${spring.application.name}:${server.port}
 
   client:
@@ -48,8 +48,9 @@ eureka:
     service-url:
       defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka}
 
+# =========================================================
 # ACTUATOR CONFIGURATION
-
+# =========================================================
 management:
 
   endpoints:
@@ -74,8 +75,13 @@ management:
     sampling:
       probability: 1.0
 
-# APPLICATION INFO
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}
 
+# =========================================================
+# APPLICATION INFO
+# =========================================================
 info:
 
   app:
@@ -83,21 +89,25 @@ info:
     version: ${APP_VERSION:1.0.0}
     description: ${APP_DESCRIPTION:Kafka Email Consumer Service}
 
+# =========================================================
 # LOGGING CONFIGURATION
-
+# =========================================================
 logging:
 
   level:
     root: INFO
+
     com.vin: DEBUG
+
     org.springframework.kafka: INFO
     org.apache.kafka: INFO
 
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
+# =========================================================
 # CUSTOM TOPICS
-
+# =========================================================
 kafka:
 
   topic:
